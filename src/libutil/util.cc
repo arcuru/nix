@@ -40,6 +40,8 @@
 #include <cmath>
 #endif
 
+#define BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
+#include <boost/stacktrace.hpp>
 
 extern char * * environ __attribute__((weak));
 
@@ -48,8 +50,13 @@ namespace nix {
 
 std::optional<std::string> getEnv(const std::string & key)
 {
+    std::cout << "Env Variable: " << key;
     char * value = getenv(key.c_str());
-    if (!value) return {};
+    if (!value) {
+        std::cout << std::endl;
+        return {};
+    }
+    std::cout << " = " << value << std::endl;
     return std::string(value);
 }
 
@@ -110,6 +117,7 @@ Path absPath(Path path, std::optional<PathView> dir, bool resolveSymlinks)
 
 Path canonPath(PathView path, bool resolveSymlinks)
 {
+    std::cout << boost::stacktrace::stacktrace() << std::endl;
     assert(path != "");
 
     std::string s;
