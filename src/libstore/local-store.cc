@@ -1121,6 +1121,7 @@ StorePathSet LocalStore::querySubstitutablePaths(const StorePathSet & paths)
 
 
 // FIXME: move this, it's not specific to LocalStore.
+// FIXME: use SubstituterSet
 void LocalStore::querySubstitutablePathInfos(const StorePathCAMap & paths, SubstitutablePathInfos & infos)
 {
     if (!settings.useSubstitutes) return;

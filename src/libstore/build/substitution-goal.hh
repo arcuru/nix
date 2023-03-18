@@ -2,6 +2,7 @@
 
 #include "lock.hh"
 #include "store-api.hh"
+#include "substituter-set.hh"
 #include "goal.hh"
 
 namespace nix {
@@ -13,21 +14,14 @@ struct PathSubstitutionGoal : public Goal
     /* The store path that should be realised through a substitute. */
     StorePath storePath;
 
-    /* The path the substituter refers to the path as. This will be
-       different when the stores have different names. */
-    std::optional<StorePath> subPath;
-
-    /* The remaining substituters. */
-    std::list<ref<Store>> subs;
+    /* The set of substituters in use. */
+    SubstituterSet substituters;
 
     /* The current substituter. */
     std::shared_ptr<Store> sub;
 
     /* Whether a substituter failed. */
     bool substituterFailed = false;
-
-    /* Path info returned by the substituter's query info operation. */
-    std::shared_ptr<const ValidPathInfo> info;
 
     /* Pipe for the substituter's standard output. */
     Pipe outPipe;

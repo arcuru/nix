@@ -59,7 +59,10 @@ void PathSubstitutionGoal::init()
     if (settings.readOnlyMode)
         throw Error("cannot substitute path '%s' - no write access to the Nix store", worker.store.printStorePath(storePath));
 
-    subs = settings.useSubstitutes ? getDefaultSubstituters() : std::list<ref<Store>>();
+    substituters = SubstituterSet(settings.useSubstitutes ? getDefaultSubstituters() : std::list<ref<Store>>()
+            , ca, storePath, &worker.store);
+
+    substituters.init();
 
     tryNext();
 }
@@ -71,7 +74,9 @@ void PathSubstitutionGoal::tryNext()
 
     cleanup();
 
-    if (subs.size() == 0) {
+    if (auto next = substituters.nextSubstituter(); next.has_value()) {
+        sub = next.value();
+    } else {
         /* None left.  Terminate this goal and let someone else deal
            with it. */
 
@@ -91,56 +96,10 @@ void PathSubstitutionGoal::tryNext()
         return;
     }
 
-    sub = subs.front();
-    subs.pop_front();
-
-    if (ca) {
-        subPath = sub->makeFixedOutputPathFromCA(storePath.name(), *ca);
-        if (sub->storeDir == worker.store.storeDir)
-            assert(subPath == storePath);
-    } else if (sub->storeDir != worker.store.storeDir) {
-        tryNext();
-        return;
-    }
-
-    try {
-        // FIXME: make async
-        info = sub->queryPathInfo(subPath ? *subPath : storePath);
-    } catch (InvalidPath &) {
-        tryNext();
-        return;
-    } catch (SubstituterDisabled &) {
-        if (settings.tryFallback) {
-            tryNext();
-            return;
-        }
-        throw;
-    } catch (Error & e) {
-        if (settings.tryFallback) {
-            logError(e.info());
-            tryNext();
-            return;
-        }
-        throw;
-    }
-
-    if (info->path != storePath) {
-        if (info->isContentAddressed(*sub) && info->references.empty()) {
-            auto info2 = std::make_shared<ValidPathInfo>(*info);
-            info2->path = storePath;
-            info = info2;
-        } else {
-            printError("asked '%s' for '%s' but got '%s'",
-                sub->getUri(), worker.store.printStorePath(storePath), sub->printStorePath(info->path));
-            tryNext();
-            return;
-        }
-    }
-
     /* Update the total expected download size. */
-    auto narInfo = std::dynamic_pointer_cast<const NarInfo>(info);
+    auto narInfo = std::dynamic_pointer_cast<const NarInfo>(substituters.getInfo());
 
-    maintainExpectedNar = std::make_unique<MaintainCount<uint64_t>>(worker.expectedNarSize, info->narSize);
+    maintainExpectedNar = std::make_unique<MaintainCount<uint64_t>>(worker.expectedNarSize, substituters.getInfo()->narSize);
 
     maintainExpectedDownload =
         narInfo && narInfo->fileSize
@@ -149,20 +108,9 @@ void PathSubstitutionGoal::tryNext()
 
     worker.updateProgress();
 
-    /* Bail out early if this substituter lacks a valid
-       signature. LocalStore::addToStore() also checks for this, but
-       only after we've downloaded the path. */
-    if (!sub->isTrusted && worker.store.pathInfoIsUntrusted(*info))
-    {
-        warn("ignoring substitute for '%s' from '%s', as it's not signed by any of the keys in 'trusted-public-keys'",
-            worker.store.printStorePath(storePath), sub->getUri());
-        tryNext();
-        return;
-    }
-
     /* To maintain the closure invariant, we first have to realise the
        paths referenced by this one. */
-    for (auto & i : info->references)
+    for (auto & i : substituters.getInfo()->references)
         if (i != storePath) /* ignore self-references */
             addWaitee(worker.makePathSubstitutionGoal(i));
 
@@ -185,7 +133,7 @@ void PathSubstitutionGoal::referencesValid()
         return;
     }
 
-    for (auto & i : info->references)
+    for (auto & i : substituters.getInfo()->references)
         if (i != storePath) /* ignore self-references */
             assert(worker.store.isValidPath(i));
 
@@ -223,7 +171,7 @@ void PathSubstitutionGoal::tryToRun()
             PushActivity pact(act.id);
 
             copyStorePath(*sub, worker.store,
-                subPath ? *subPath : storePath, repair, sub->isTrusted ? NoCheckSigs : CheckSigs);
+                substituters.getSubPath() ? *substituters.getSubPath(): storePath, repair, sub->isTrusted ? NoCheckSigs : CheckSigs);
 
             promise.set_value();
         } catch (...) {
