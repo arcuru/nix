@@ -117,6 +117,10 @@
             buildPackages.autoreconfHook
             buildPackages.pkg-config
 
+            # For meson build system
+            buildPackages.meson
+            buildPackages.ninja
+
             # Tests
             buildPackages.git
             buildPackages.mercurial # FIXME: remove? only needed for tests
@@ -696,6 +700,10 @@
             enableParallelBuilding = true;
 
             installFlags = "sysconfdir=$(out)/etc";
+
+            # Needed for meson to find boost
+            BOOST_INCLUDEDIR = "${lib.getDev pkgs.boost}/include";
+            BOOST_LIBRARYDIR = "${lib.getLib pkgs.boost}/lib";
 
             shellHook =
               ''
