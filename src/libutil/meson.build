@@ -8,7 +8,7 @@ libutil_inc = [include_directories('.')]
 #============================================================================
 
 libutil_dep_list = [
-    #aws_sdk_cpp_dep,
+    aws_sdk_cpp_dep,
     boost_dep,
     libarchive_dep,
     libbrotli_dep,

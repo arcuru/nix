@@ -21,7 +21,7 @@ required_dep_dirs = [
     'sqlite']
 
 optional_dep_dirs = [
-    #'aws-sdk-cpp',
+    'aws-sdk-cpp',
     'bdw-gc',
     'gtest',
     'sodium']

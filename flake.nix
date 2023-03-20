@@ -709,6 +709,15 @@
             # 'meson setup -D rapidcheck_dir=$RAPIDCHECK_DIR builddir'
             RAPIDCHECK_DIR = "${lib.getDev pkgs.rapidcheck}";
 
+            AWS_SDK_INCLUDEDIR = "${lib.getDev (pkgs.aws-sdk-cpp.override {
+                apis = ["s3" "transfer"];
+                customMemoryManagement = false;
+            })}/include";
+            AWS_SDK_LIBRARYDIR = "${lib.getLib (pkgs.aws-sdk-cpp.override {
+                apis = ["s3" "transfer"];
+                customMemoryManagement = false;
+            })}/lib";
+
             shellHook =
               ''
                 PATH=$prefix/bin:$PATH

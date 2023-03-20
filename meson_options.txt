@@ -46,6 +46,18 @@ option(
     description : 'path to rapidcheck')
 
 
+# location of aws_sdk_cpp install
+#============================================================================
+option(
+    'aws_sdk_cpp_include_dir',
+    type : 'string',
+    description : 'path to aws_sdk_cpp includes')
+option(
+    'aws_sdk_cpp_lib_dir',
+    type : 'string',
+    description : 'path to aws_sdk_cpp libs')
+
+
 # optional dependencies
 #============================================================================
 

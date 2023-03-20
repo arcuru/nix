@@ -6,7 +6,7 @@
 #============================================================================
 
 libstore_dep_list = [
-    #aws_sdk_cpp_dep,
+    aws_sdk_cpp_dep,
     libcurl_dep,
     libdl_dep,
     libseccomp_dep,

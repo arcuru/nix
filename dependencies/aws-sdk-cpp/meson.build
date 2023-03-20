@@ -1,25 +1,42 @@
-# FIXME: aws-cpp-sdk is disabled in the meson build
-#   AFAICT, it causes build failures because the pkg-config cflags contain
-#   "-fno-exceptions -std=c++11", both of which break existing Nix code.
-
 # aws s3 dependency file
+# FIXME: aws-cpp-sdk should be an optional dependency
+#   Unfortunately, importing it using the pkg-config option, which could be optional,
+#   fails because of the cflags in the pkg-config. They contain
+#   "-fno-exceptions -std=c++11", both of which break existing Nix code.
 #============================================================================
 
 
-# Look for aws-cpp-sdk, an optional dependency
+# Look for aws-cpp-sdk
 #--------------------------------------------------
-aws_sdk_cpp_dep_list = [
-    dependency('aws-cpp-sdk-core', required: get_option('enable_s3')),
-    dependency('aws-cpp-sdk-s3', required: get_option('enable_s3')),
-    dependency('aws-cpp-sdk-transfer', required: get_option('enable_s3'))
-]
+aws_sdk_cpp_core_dep = declare_dependency(
+    dependencies : cpp.find_library('aws-cpp-sdk-core',
+        dirs : get_option('aws_sdk_cpp_lib_dir')),
+    include_directories : include_directories(
+        get_option('aws_sdk_cpp_include_dir')))
 
-aws_sdk_cpp_dep = declare_dependency(dependencies : aws_sdk_cpp_dep_list)
+aws_sdk_cpp_s3_dep = declare_dependency(
+    dependencies : cpp.find_library('aws-cpp-sdk-s3',
+        dirs : get_option('aws_sdk_cpp_lib_dir')),
+    include_directories : include_directories(
+        get_option('aws_sdk_cpp_include_dir')))
+
+aws_sdk_cpp_transfer_dep = declare_dependency(
+    dependencies : cpp.find_library('aws-cpp-sdk-transfer',
+        dirs : get_option('aws_sdk_cpp_lib_dir')),
+    include_directories : include_directories(
+        get_option('aws_sdk_cpp_include_dir')))
+
+
+aws_sdk_cpp_dep = [
+    aws_sdk_cpp_core_dep,
+    aws_sdk_cpp_s3_dep,
+    aws_sdk_cpp_transfer_dep,
+]
 
 # check if dependencies are found
 #--------------------------------------------------
 have_aws_sdk_cpp = true
-foreach dep : aws_sdk_cpp_dep_list
+foreach dep : aws_sdk_cpp_dep
     if not dep.found()
         have_aws_sdk_cpp = false
     endif
