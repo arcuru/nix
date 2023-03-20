@@ -8,6 +8,7 @@ libutil_tests_inc = [include_directories('.')]
 
 libutil_tests_dep_list = [
     gtest_dep,
+    rapidcheck_dep,
 
     libutil_dep]
 

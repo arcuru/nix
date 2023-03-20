@@ -38,6 +38,14 @@ option(
     description : 'C build flags')
 
 
+# location of rapidcheck install
+#============================================================================
+option(
+    'rapidcheck_dir',
+    type : 'string',
+    description : 'path to rapidcheck')
+
+
 # optional dependencies
 #============================================================================
 

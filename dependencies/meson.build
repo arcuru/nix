@@ -16,6 +16,7 @@ required_dep_dirs = [
     'nlohmann-json',
     'openssl',
     'pthread',
+    'rapidcheck',
     'seccomp',
     'sqlite']
 

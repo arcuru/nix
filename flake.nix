@@ -705,6 +705,10 @@
             BOOST_INCLUDEDIR = "${lib.getDev pkgs.boost}/include";
             BOOST_LIBRARYDIR = "${lib.getLib pkgs.boost}/lib";
 
+            # Must be passed to meson with:
+            # 'meson setup -D rapidcheck_dir=$RAPIDCHECK_DIR builddir'
+            RAPIDCHECK_DIR = "${lib.getDev pkgs.rapidcheck}";
+
             shellHook =
               ''
                 PATH=$prefix/bin:$PATH

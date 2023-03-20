@@ -139,4 +139,4 @@ libutil_dep = declare_dependency(
 
 # add test dir
 #---------------------------------------------------
-#subdir('tests')
+subdir('tests')
