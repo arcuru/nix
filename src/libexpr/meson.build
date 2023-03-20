@@ -161,3 +161,12 @@ install_headers(
 libexpr_dep = declare_dependency(
     link_with : libexpr_lib,
     include_directories : include_directories('.'))
+
+# FIXME!!! tests should not be declared inside the
+# build directory, but should be moved to a seperate test
+# directory. for now, we just include it here.
+
+
+# add test dir
+#---------------------------------------------------
+subdir('tests')
