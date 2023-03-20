@@ -126,8 +126,7 @@ libstore_inc = [include_directories('.')]
 
 libstore_dirs = [
     'build',
-    'builtins',
-    'tests']
+    'builtins']
 
 foreach dir : libstore_dirs
     subdir(dir)
@@ -221,3 +220,12 @@ libstore_config = pkg.generate(
 libstore_dep = declare_dependency(
     link_with : libstore_lib,
     include_directories : libstore_inc)
+
+# FIXME!!! tests should not be declared inside the
+# build directory, but should be moved to a seperate test
+# directory. for now, we just include it here.
+
+
+# add test dir
+#---------------------------------------------------
+subdir('tests')

@@ -2,7 +2,7 @@
 
 #include <rapidcheck/gen/Arbitrary.h>
 
-#include <outputs-spec.hh>
+#include "../outputs-spec.hh"
 
 #include <tests/path.hh>
 

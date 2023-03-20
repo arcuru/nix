@@ -38,16 +38,24 @@ libutil_tests_cxx_args = []
 
 libutil_tests_link_args = []
 
+libutil_tests_dep = library(
+    'libutil_tests',
+    sources : libutil_tests_src,
+    include_directories : proj_inc,
+    cpp_args : libutil_tests_cxx_args,
+    link_args : libutil_tests_link_args,
+    dependencies : libutil_tests_dep_list)
+
 
 # build executable
 #---------------------------------------------------
 libutil_tests_bin = executable(
     'libutil-tests',
-    sources : libutil_tests_src,
     install : false,
     include_directories : proj_inc,
     cpp_args : libutil_tests_cxx_args,
     link_args : libutil_tests_link_args,
-    dependencies : libutil_tests_dep_list)
+    dependencies : libutil_tests_dep_list,
+    link_with : libutil_tests_dep)
 
 test('libutil-tests', libutil_tests_bin)
