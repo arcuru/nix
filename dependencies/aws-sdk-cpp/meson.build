@@ -1,3 +1,7 @@
+# FIXME: aws-cpp-sdk is disabled in the meson build
+#   AFAICT, it causes build failures because the pkg-config cflags contain
+#   "-fno-exceptions -std=c++11", both of which break existing Nix code.
+
 # aws s3 dependency file
 #============================================================================
 
