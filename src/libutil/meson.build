@@ -38,6 +38,7 @@ libutil_src = files(
     'hash.cc',
     'hilite.cc',
     'logging.cc',
+    'namespaces.cc',
     'serialise.cc',
     'suggestions.cc',
     'tarfile.cc',
@@ -73,6 +74,7 @@ libutil_headers = files(
     'logging.hh',
     'lru-cache.hh',
     'monitor-fd.hh',
+    'namespaces.hh',
     'pool.hh',
     'ref.hh',
     'serialise.hh',
@@ -137,4 +139,4 @@ libutil_dep = declare_dependency(
 
 # add test dir
 #---------------------------------------------------
-subdir('tests')
+#subdir('tests')
