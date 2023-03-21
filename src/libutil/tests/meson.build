@@ -58,4 +58,7 @@ libutil_tests_bin = executable(
     dependencies : libutil_tests_dep_list,
     link_with : libutil_tests_dep)
 
-test('libutil-tests', libutil_tests_bin)
+test(
+    'libutil-tests',
+    libutil_tests_bin,
+    suite : 'unit')

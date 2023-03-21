@@ -139,22 +139,6 @@ src_markdown_files = files(
     'log.md')
 
 
-# nix_ln_src = [
-#     [ bindir, 'nix-build' ],
-#     [ bindir, 'nix-channel' ],
-#     [ bindir, 'nix-collect-garbage' ],
-#     [ bindir, 'nix-copy-closure' ],
-#     [ bindir, 'nix-daemon' ],
-#     [ bindir, 'nix-env' ],
-#     [ bindir, 'nix-hash' ],
-#     [ bindir, 'nix-instantiate' ],
-#     [ bindir, 'nix-prefetch-url' ],
-#     [ bindir, 'nix-shell' ],
-#     [ bindir, 'nix-store' ],
-#     [ join_paths(libexecdir, 'nix'), 'build-remote' ],
-#]
-
-
 # targets
 #============================================================================
 nix_src += custom_target(
@@ -233,6 +217,23 @@ nix_bin = executable(
     link_args : nix_link_args,
     dependencies : nix_dep_list)
 
+# Install the symlinks for the nix binary
+nix_symlink_list = [
+    'nix-build',
+    'nix-channel',
+    'nix-collect-garbage',
+    'nix-copy-closure',
+    'nix-daemon',
+    'nix-env',
+    'nix-hash',
+    'nix-instantiate',
+    'nix-prefetch-url',
+    'nix-shell',
+    'nix-store']
 
-
-
+foreach nix_symlink : nix_symlink_list
+    install_symlink(
+        nix_symlink,
+        install_dir : bindir,
+        pointing_to : 'nix')
+endforeach

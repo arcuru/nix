@@ -16,8 +16,23 @@ $ cd builddir/
 $ meson compile
 ```
 
-To run the tests, use:
+All of the following commands need to be run in the build directory.
+
+## Unit Tests
+
+The unit tests can be run by themselves with the following:
 
 ```console
-$ meson test
+$ meson test --suite unit
+```
+
+## Functional Tests
+
+The functional tests require the nix build to be installed into the local environment, otherwise they will use the system nix.
+
+The functional tests are hardcoded to use a specific output directory, so you must specify that in the install command.
+
+```console
+$ meson install --destdir ../outputs/out
+$ meson test --suite functional
 ```

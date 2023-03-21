@@ -1,6 +1,8 @@
-source ../common.sh
+source ./common.sh
 
 registry=$TEST_ROOT/registry.json
+
+echo "here"
 
 writeSimpleFlake() {
     local flakeDir="$1"

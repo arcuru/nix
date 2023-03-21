@@ -84,7 +84,8 @@ config_h.set_quoted(
 
 # set install directories
 #-------------------------------------------------
-prefix = get_option('prefix')
+# FIXME: Hardcoding the prefix here because the test scripts expect it
+prefix = '/'
 libdir = join_paths(prefix, get_option('libdir'))
 bindir = join_paths(prefix, get_option('bindir'))
 datadir = join_paths(prefix, get_option('datadir'))
@@ -228,7 +229,7 @@ project_dirs = [
     'src',
     'scripts',
     #'misc',
-    #'tests',
+    'tests',
 ]
 
 

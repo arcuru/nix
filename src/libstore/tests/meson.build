@@ -58,4 +58,7 @@ libstore_tests_bin = executable(
         libstore_tests_dep,
         libutil_tests_dep])
 
-test('libstore-tests', libstore_tests_bin)
+test(
+    'libstore-tests',
+    libstore_tests_bin,
+    suite : 'unit')

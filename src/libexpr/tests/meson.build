@@ -60,4 +60,7 @@ libexpr_tests_bin = executable(
         libstore_tests_dep,
         libutil_tests_dep])
 
-test('libexpr-tests', libexpr_tests_bin)
+test(
+    'libexpr-tests',
+    libexpr_tests_bin,
+    suite : 'unit')
