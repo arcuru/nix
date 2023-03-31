@@ -94,6 +94,8 @@ public:
             auto state(state_.lock());
             auto nextWakeup = std::chrono::milliseconds::max();
             while (state->active) {
+                // FIXME: haveUpdate is pretty pointless when you have updateCV? Like, that's what the condition_variables are for?
+                // I think? need to check how the condition_variables work
                 if (!state->haveUpdate)
                     state.wait_for(updateCV, nextWakeup);
                 nextWakeup = draw(*state);
@@ -109,6 +111,11 @@ public:
 
     void stop() override
     {
+        if (updateThread.joinable()) {
+            // FIXME: does this just kill the thread? or does it wait for it to finish?
+            // if it kills the thread, then you can cleanup the logic by removing quitCV entirely
+            updateThread.join();
+        }
         {
             auto state(state_.lock());
             if (!state->active) return;
@@ -117,7 +124,6 @@ public:
             updateCV.notify_one();
             quitCV.notify_one();
         }
-        updateThread.join();
     }
 
     bool isVerbose() override
@@ -365,6 +371,8 @@ public:
                     if (i->startTime + delay < now)
                         break;
                     else
+                        // FIXME: do they realize there's an additional 50ms delay in the update thread?
+                        // Or is nextWakeUp a specific time and not a duration?
                         nextWakeup = std::min(nextWakeup, std::chrono::duration_cast<std::chrono::milliseconds>(delay - (now - i->startTime)));
                 }
                 ++i;
